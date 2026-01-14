@@ -1,31 +1,27 @@
-# DfT Analyst R repository template
+# Project Documentation
 
-This is a template git repository for use by DfT analysts in R. It aims to standardise issue reporting and pull requests, as well as minimising the risk of accidentally pushing secure data.
+### Project Description and Scope
 
-## To use 
+I will be using telecoms data to analyse and visualise how crowd size changes over time in specific locations. This can be in the form of a time series or a map showing the most recent data. The work should display different demographics within each area and compare them over time. I can create a simple dashboard that updates in time with how the data is created and let users choose which demographics they want to see displayed.
 
-To use this template, click on the green button "use template" at the top of this repository. This will allow you to set up a repository as normal, using the structure and features of this repo.
+### Learning Aim
 
-## Features
+The aim is to use Spark in R Studio, explore more Spark transformations, and link this learning to developing real-time dashboards that run smoothly. 
 
-### Raising issues
+### Project Data
 
-The repository contains two issue templates which are loaded automatically; one for bug reporting, and one for feature suggestions. These can be used to record issues and planned improvements within your code, and the standardised template ensures you capture all of the required information every time.
+The telecoms dataset shows the number of people per specific demographic combinations (age and gender, spend power and purpose). At the most detailed, this data is at OA (Output area), the smallest form of geography from the ONS geographies. The data is updated hourly, while not being currently updated there is purpose to developing a project that handles this update timeframe as this has been the case in past projects. 
 
-### Pull requests
+The volume of data, almost 2TB of logical bytes (uncompressed data), should classify this dataset as Big Data. The data also contains valuable information, showing us how different demographics are travelling around the country, which is particularly useful when certain events (e.g. King's coronation) affect travel patterns. 
 
-The repository contains a pull request template which loads automatically. This standardised form to complete ensures you are appropriately reviewing pull requests and provides a QA record of code changes.
+### Business Questions
 
-### Commit template
+For this project, I can explore how pandemic lockdowns affect who and how people travel by creating a baseline just before the initial lockdown was put into effect. By stretching the timeframe, it should be apparent when travel returns to normal levels. 
 
-The repository contains a git commit template. This does not load automatically, and must be requested in your R terminal by running
+### Resources - Cloud / On Premise / Costing
 
-`git config commit.template .gitmessage`
+Reflect on the resources you have used, and what costs you might incur if your solution were to be scaled up.  You may make use of online costing tools for Azure or other platforms.  How does running your solution in the cloud compare to having dedicated on-premise equipment dedicated to this processing?  This is really a focus on ROI (Return on Investment).  What return will be derived given the investment made (fixed cost and marginal cost).
 
-This provides a template for good git messages, and also reminds users not to commit to Github any secrets or data.
+### Reflection
 
-### Gitignore
-
-The git ignore file is set to ignore common data formats such as xlsx, csv and ods tables. It also ignores the .renviron file to allow you to store secrets such as API keys securely in your local environment.
-
-The repository also includes Data and Output folders. Putting data inputs and outputs into these folders ensures they will not be pushed to Git, regardless of format. This is ideal when you have a project with a large number of varied inputs or outputs (e.g. XML files, or HTML outputs).
+What went well, and what did not not go so well?  What have you learned that you can take forward into your workplace or future career?  Are there any new projects you might now be able to tackle?  Justify which grade you have aimed for with reference to the marking rubric. You may achieve more by challening yourself, and learning from failure rather than doing something safe.  You need to set your own goals and evaluate the extent to which you have met them.
