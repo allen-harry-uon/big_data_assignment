@@ -12,3 +12,9 @@ con <- DBI::dbConnect(
   project = "dft-gcp-mobilenetworkdata-prod", 
   dataset = "mobilenetwork_data_test"
 )
+
+sc <- spark_connect(master = "local", version = "4.0.1")
+
+cars <- sparklyr::copy_to(sc, mtcars)
+
+# spark_disconnect(sc)
