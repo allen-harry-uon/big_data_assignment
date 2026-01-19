@@ -14,6 +14,14 @@ con <- DBI::dbConnect(
   project = "dft-gcp-mobilenetworkdata-prod"
 )
 
+codes <- readr::read_csv("Data/PCD_OA_LSOA_MSOA_LAD_NOV21_UK_LU.csv")
+
+birmingham_codes <- codes %>% 
+  dplyr::filter(grepl("Birmingham", msoa11nm))
+
+new_street_codes <- birmingham_codes %>% 
+  dplyr::filter(msoa11cd == "E02006899"| msoa11cd == "E02006896")
+
 msoa_shapefile <- sf::read_sf("Data/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
 
 birmingham_shapes <- msoa_shapefile %>% 
