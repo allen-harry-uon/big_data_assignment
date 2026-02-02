@@ -16,7 +16,6 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
-codes <- readr::read_csv("Data/PCD_OA_LSOA_MSOA_LAD_NOV21_UK_LU.csv")
 msoa_shapefile <- sf::read_sf("Data/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
 
 waterloo_shape <- msoa_shapefile %>% 
