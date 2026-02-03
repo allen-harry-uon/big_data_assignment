@@ -22,3 +22,39 @@ waterloo_shape <- msoa_shapefile %>%
   dplyr::filter(MSOA21CD == "E02006801") %>% 
   sf::st_as_sf() %>% 
   sf::st_transform(crs = "+proj=longlat +datum=WGS84")
+
+waterloo_data <- DBI::dbGetQuery(con, "SELECT date, 
+                                              time, 
+                                              peopleCount, 
+                                              msoa, 
+                                              residentSum, 
+                                              workerSum, 
+                                              visitorSum
+                                       FROM msoa_counts
+                                       WHERE date = DATE '2023-05-17'
+                                       AND msoa = 'E02006801'")
+
+waterloo_mapped_data <- waterloo_data %>% 
+  dplyr::group_by(date, msoa) %>% 
+  dplyr::summarise(total_count = sum(peopleCount)) %>% 
+  dplyr::left_join(waterloo_shape, by = join_by(msoa == MSOA21CD)) %>% 
+  sf::st_as_sf() %>% 
+  sf::st_transform(crs = "+proj=longlat +datum=WGS84")
+
+location_label <- sprintf("<span style='font-weight:bold; font-size:1.5em;'>%s</span>", waterloo_mapped_data$MSOA21NM)
+count_label <- sprintf("<br>Count: %s", waterloo_mapped_data$total_count)
+
+labels <- paste(location_label, count_label) %>% 
+  lapply(htmltools::HTML)
+
+leaflet::leaflet() %>% 
+  addTiles(options = tileOptions(opacity = 0.5)) %>% 
+  addPolygons(data = waterloo_mapped_data,
+              weight = 3,
+              color = "#004D3B",
+              fillColor = "#004D3B",
+              fillOpacity= 0.6,
+              label = labels,
+              highlight = highlightOptions(weight = 3,
+                                           color = "#666",
+                                           fillOpacity = 0.1))
