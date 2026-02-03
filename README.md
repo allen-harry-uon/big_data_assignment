@@ -12,16 +12,15 @@ The aim is to use Spark in R Studio, explore more Spark transformations, and lin
 
 ### Project Data
 
-The telecoms dataset shows the number of people per specific demographic combinations (age and gender, spend power and purpose). 
-At the most detailed, this data is at OA (Output area), the smallest form of geography from the ONS geographies. The data is updated hourly, 
-while not being currently updated there is purpose to developing a project that handles this update timeframe as this has been the case in past projects. 
-The volume of data, almost 2TB of logical bytes (uncompressed data), should classify this dataset as Big Data. The data also contains valuable information, 
-showing us how different demographics are travelling around the country, which is particularly useful when certain events (e.g. King's coronation) 
-affect travel patterns. 
+The telecoms dataset shows the number of people per specific demographic combinations (age, gender, and purpose). This data is at the 'Middle layer super
+output' level, which contains roughly 7000 shapes that cover the UK. The data is split by 5 minute intervals for each area, and the dataset is 234.53GB
+of logical bytes (uncompressed data). The data contains valuable information on how different demographics travel depending on certain events. The velocity 
+at which the data is created and the value it brings to the organisation can class it as Big Data.
 
 ### Business Questions
 
-I can use this data to uncover patterns in travel of different demographic groups, or how specific large-scale events impact travel. 
+I can use this data to uncover patterns in travel of different demographic groups, or how specific large-scale events impact travel. In this case, I will
+be looking at how train strikes affect travel, particularly the purpose of travel. 
 
 ### Resources - Cloud / On Premise / Costing
 
