@@ -16,7 +16,7 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
-msoa_shapefile <- sf::read_sf("Data/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
+msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
 
 waterloo_shape <- msoa_shapefile %>% 
   dplyr::filter(MSOA21CD == "E02006801") %>% 

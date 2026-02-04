@@ -46,6 +46,8 @@ baseline <- strike_data %>%
                 worker_count_baseline = workerSum,
                 visitor_count_baseline = visitorSum)
 
+readr::write_csv(baseline, "Data/baseline.csv")
+
 waterloo_with_baseline <- strike_data %>% 
   dplyr::left_join(baseline, by = join_by(weekday, msoa)) %>% 
   dplyr::filter(date >= "2023-03-13") %>% 
