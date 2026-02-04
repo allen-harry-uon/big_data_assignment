@@ -1,23 +1,22 @@
+library(jsonencryptor)
 library(bigrquery)
 library(DBI)
 library(dplyr)
 
-strike_data <- DBI::dbGetQuery(con, "SELECT date, 
-                                            msoa,
-                                            SUM(residentSum), 
-                                            SUM(workerSum), 
-                                            SUM(visitorSum)
-                                     FROM msoa_counts
-                                     WHERE msoa = 'E02006801'
-                                     GROUP BY date, msoa")
+##Authenticate for BQ connection
+bigrquery::bq_auth(path = jsonencryptor::secret_read("service_secret.json"))
 
-baseline <- DBI::dbGetQuery(con, "SELECT date, 
+con <- DBI::dbConnect(
+  bigrquery::bigquery(),
+  project = "dtsg-ana-transporthubcrowdmon", 
+  dataset = "crowd_monitoring_api"
+)
+
+strike_data <- DBI::dbGetQuery(con, "SELECT date,
+                                            time,
                                             msoa,
-                                            SUM(residentSum), 
-                                            SUM(workerSum), 
-                                            SUM(visitorSum)
+                                            residentSum, 
+                                            workerSum, 
+                                            visitorSum
                                      FROM msoa_counts
-                                     WHERE msoa = 'E02006801'
-                                     AND date >= '2023-03-06'
-                                     AND date <= '2023-03-12'
-                                     GROUP BY date, msoa")
+                                     WHERE msoa = 'E02006801'")
