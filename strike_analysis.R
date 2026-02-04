@@ -50,20 +50,25 @@ waterloo_with_baseline <- strike_data %>%
   dplyr::mutate(peopleCount_perc = peopleCount / people_count_baseline,
                 residentSum_perc = residentSum / resident_count_baseline,
                 workerSum_perc = workerSum / worker_count_baseline,
-                visitorSum_perc = visitorSum / visitor_count_baseline)
+                visitorSum_perc = visitorSum / visitor_count_baseline) %>% 
+  dplyr::select(date, residentSum_perc, workerSum_perc, 
+                visitorSum_perc) %>% 
+  tidyr::pivot_longer(cols = c(residentSum_perc, workerSum_perc, 
+                               visitorSum_perc),
+                      names_to = "travel_reason",
+                      values_to = "perc")
+  
 
-ggplot(data = waterloo_with_baseline, aes(x = date))+
-  geom_line(aes(y = residentSum_perc),
-            colour = "#004D3B",
-            linewidth = 1)+
-  geom_line(aes(y = workerSum_perc),
-            colour = "#3C9F8B",
-            linewidth = 1)+
-  geom_line(aes(y = visitorSum_perc),
-            colour = "#001A70",
-            linewidth = 1)+
+ggplot(data = waterloo_with_baseline, aes(x = date,
+                                          y = perc,
+                                          group = travel_reason,
+                                          colour = travel_reason))+
+  geom_line(linewidth = 1)+
+  scale_colour_manual(values = palette)+
   scale_y_continuous(labels = scales::label_percent(),
-                     limits = c(0, 1.5))+
+                     limits = c(0, 1.5),
+                     name = "")+
+  scale_x_date(name = "Date")+
   ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
                  panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
                  strip.background = ggplot2::element_rect(fill = "white"),
@@ -73,7 +78,16 @@ ggplot(data = waterloo_with_baseline, aes(x = date))+
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
              colour = "grey",
-             linetype = "dashed")
+             linetype = "dashed")+
   geom_hline(yintercept = 1,
              colour = "black",
-             size = 1)
+             size = 1)+
+  annotate("label",
+           label = "Solid line =\n Train strikes",
+           x = as.Date("2023-05-21"),
+           y = 1.5)+
+  annotate("label",
+           label = "Dashed line =\n Bank holidays",
+           x = as.Date("2023-05-21"),
+           y = 1.35)+
+  labs(colour = "Reason for travel")
