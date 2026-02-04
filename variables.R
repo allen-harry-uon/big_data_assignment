@@ -19,14 +19,11 @@ all_strike_date <- c(strike_date_1,strike_date_2, strike_date_3,
   purrr::map_vec(as.Date)
 
 # Bank holidays
-bank_hol_date_1 <- "2023-04-07"
-bank_hol_date_2 <- "2023-04-10"
-bank_hol_date_3 <- "2023-05-01"
-bank_hol_date_4 <- "2023-05-08"
-bank_hol_date_5 <- "2023-05-29"
+bank_hol_date_1 <- "2023-05-01"
+bank_hol_date_2 <- "2023-05-08"
+bank_hol_date_3 <- "2023-05-29"
 
-all_bank_hols <- c(bank_hol_date_1, bank_hol_date_2, bank_hol_date_3,
-                   bank_hol_date_4, bank_hol_date_5) %>% 
+all_bank_hols <- c(bank_hol_date_1, bank_hol_date_2, bank_hol_date_3) %>% 
   purrr::map_vec(as.Date)
 
 # Chart colour palette
