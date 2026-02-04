@@ -24,6 +24,8 @@ waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
                                      FROM msoa_counts
                                      WHERE msoa = 'E02006801'")
 
+readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
+
 strike_data <- waterloo_data %>% 
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
