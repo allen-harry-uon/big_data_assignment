@@ -71,6 +71,9 @@ ggplot(data = waterloo_with_baseline, aes(x = date))+
                  axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
+  geom_vline(xintercept = all_bank_hols,
+             colour = "grey",
+             linetype = "dashed")
   geom_hline(yintercept = 1,
              colour = "black",
              size = 1)
