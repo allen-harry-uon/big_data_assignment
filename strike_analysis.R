@@ -12,7 +12,7 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
-strike_data <- DBI::dbGetQuery(con, "SELECT date,
+waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
                                             time,
                                             msoa,
                                             residentSum, 
@@ -20,3 +20,8 @@ strike_data <- DBI::dbGetQuery(con, "SELECT date,
                                             visitorSum
                                      FROM msoa_counts
                                      WHERE msoa = 'E02006801'")
+
+strike_data <- waterloo_data %>% 
+  dplyr::mutate(time = hms::as_hms(time)) %>% 
+  dplyr::filter(time >= hms("08:00:00"),
+                time <= hms("17:00:00"))
