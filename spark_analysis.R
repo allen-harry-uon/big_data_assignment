@@ -16,4 +16,10 @@ column_types <- c(date = "Date",
                   workerSum = "integer",
                   visitorSum = "integer")
 
-waterloo_data_sc <- sparklyr::spark_read_csv(sc, "Data/waterloo_table.csv", columns = column_types)
+waterloo_data_sc <- sparklyr::spark_read_csv(sc, 
+                                             name = "waterloo_data",
+                                             path = "Data/crowd_data/waterloo_table.csv", 
+                                             columns = column_types)
+
+waterloo_data_sc %>% 
+  dplyr::mutate(time = date_format(time, "HH:mm:ss"))
