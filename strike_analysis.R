@@ -34,8 +34,8 @@ strike_data <- waterloo_data %>%
                    residentSum = mean(residentSum),
                    workerSum = mean(workerSum),
                    visitorSum = mean(visitorSum)) %>% 
-  dplyr::mutate(weekday = lubridate::wday(date, week_start = 1)) %>% 
-  dplyr::filter(between(weekday, 1, 5)) %>% 
+  dplyr::mutate(weekday = lubridate::wday(date)) %>% 
+  dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup()
 
 baseline <- strike_data %>% 
@@ -46,7 +46,7 @@ baseline <- strike_data %>%
                 worker_count_baseline = workerSum,
                 visitor_count_baseline = visitorSum)
 
-readr::write_csv(baseline, "Data/baseline.csv")
+readr::write_csv(baseline, "Data/crowd_data/baseline.csv")
 
 waterloo_with_baseline <- strike_data %>% 
   dplyr::left_join(baseline, by = join_by(weekday, msoa)) %>% 
