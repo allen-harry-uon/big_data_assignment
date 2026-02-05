@@ -18,10 +18,10 @@ column_types <- c(date = "Date",
                   visitorSum = "integer")
 
 baseline_column_types <- c(msoa = "character",
-                           peopleCount = "double",
-                           residentSum = "double",
-                           workerSum = "double",
-                           visitorSum = "double",
+                           people_count_baseline = "double",
+                           resident_count_baseline = "double",
+                           worker_count_baseline = "double",
+                           visitor_count_baseline = "double",
                            weekday = "integer")
 
 waterloo_data_sc <- sparklyr::spark_read_csv(sc, 
