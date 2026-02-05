@@ -1,0 +1,10 @@
+---
+title: "Big Data task 2"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+highlight: github
+resource_files:
+  - renv.lock
+---
+
