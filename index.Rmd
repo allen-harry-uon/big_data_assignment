@@ -8,3 +8,50 @@ resource_files:
   - renv.lock
 ---
 
+```{r include=FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+
+library(ggplot2)
+
+source("spark_analysis.R")
+
+```
+
+# Train strikes between April and May
+
+```{r fig.width=8}
+
+p <- ggplot(data = strike_data_to_plot, aes(x = date,
+                                  y = perc,
+                                  group = travel_reason,
+                                  colour = travel_reason))+
+  geom_line(linewidth = 1)+
+  scale_colour_manual(values = palette)+
+  scale_y_continuous(labels = scales::label_percent(),
+                     limits = c(0, 1.5),
+                     name = "")+
+  scale_x_date(name = "Date")+
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
+                 panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
+                 strip.background = ggplot2::element_rect(fill = "white"),
+                 axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
+                 axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
+  geom_vline(xintercept = all_strike_date,
+             colour = "grey")+
+  geom_vline(xintercept = all_bank_hols,
+             colour = "grey",
+             linetype = "dashed")+
+  geom_hline(yintercept = 1,
+             colour = "black",
+             size = 1)+
+  annotate("label",
+           label = "Solid line =\n Train strikes",
+           x = as.Date("2023-05-21"),
+           y = 1.5)+
+  annotate("label",
+           label = "Dashed line =\n Bank holidays",
+           x = as.Date("2023-05-21"),
+           y = 1.35)+
+  labs(colour = "Reason for travel")
+
+```
