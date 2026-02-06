@@ -1,4 +1,15 @@
 ## Setting variables so they're not hard coded
+library(purrr)
+library(sf)
+
+# MSOA shape codes to filter by (as if reading entire dataset from BigQuery)
+msoa_codes <- c("E02006801")
+all_msoa <- toString(sQuote(msoa, q = F))
+
+# Reading shapefiles for mapping
+msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
+selected_shapes <- msoa_shapefile %>% 
+  dplyr::filter(MSOA21CD %in% msoa_codes)
 
 # Baseline dates
 baseline_start <- "2023-03-06"

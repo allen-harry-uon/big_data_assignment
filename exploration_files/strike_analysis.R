@@ -5,6 +5,8 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
+source("exploration_files/variables.R")
+
 ##Authenticate for BQ connection
 bigrquery::bq_auth(path = jsonencryptor::secret_read("service_secret.json"))
 
@@ -14,7 +16,7 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
-waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
+waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                             time,
                                             msoa,
                                             peopleCount,
@@ -22,9 +24,12 @@ waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
                                             workerSum, 
                                             visitorSum
                                      FROM msoa_counts
-                                     WHERE msoa = 'E02006801'")
+                                     WHERE msoa IN (", all_msoa, ")", sep = ""))
+
+readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
 
 strike_data <- waterloo_data %>% 
+  dplyr::filter(msoa %in% msoa_codes) %>% 
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
   dplyr::group_by(date, msoa) %>% 
@@ -32,8 +37,8 @@ strike_data <- waterloo_data %>%
                    residentSum = mean(residentSum),
                    workerSum = mean(workerSum),
                    visitorSum = mean(visitorSum)) %>% 
-  dplyr::mutate(weekday = lubridate::wday(date, week_start = 1)) %>% 
-  dplyr::filter(between(weekday, 1, 5)) %>% 
+  dplyr::mutate(weekday = lubridate::wday(date)) %>% 
+  dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup()
 
 baseline <- strike_data %>% 
@@ -43,6 +48,8 @@ baseline <- strike_data %>%
                 resident_count_baseline = residentSum,
                 worker_count_baseline = workerSum,
                 visitor_count_baseline = visitorSum)
+
+readr::write_csv(baseline, "Data/crowd_data/baseline.csv")
 
 waterloo_with_baseline <- strike_data %>% 
   dplyr::left_join(baseline, by = join_by(weekday, msoa)) %>% 
