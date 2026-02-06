@@ -47,7 +47,6 @@ baseline_sc <- sparklyr::spark_read_csv(sc,
                                         columns = baseline_column_types)
 
 strike_data_sc <- waterloo_data_sc %>% 
-  sparklyr::filter(msoa %in% msoa_codes) %>% 
   # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
   dplyr::filter(time >= "08:00:00",
@@ -67,6 +66,8 @@ strike_data_sc <- waterloo_data_sc %>%
                 residentSum_perc = residentSum / resident_count_baseline,
                 workerSum_perc = workerSum / worker_count_baseline,
                 visitorSum_perc = visitorSum / visitor_count_baseline) %>% 
+  # Filtering for area after aggregating whole data
+  sparklyr::filter(msoa %in% msoa_codes) %>% 
   dplyr::select(date, residentSum_perc, workerSum_perc, 
                 visitorSum_perc) %>% 
   tidyr::pivot_longer(cols = c(residentSum_perc, workerSum_perc, 
