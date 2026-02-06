@@ -2,7 +2,7 @@ library(sparklyr)
 library(dplyr)
 library(ggplot2)
 
-  # Run once to install spark
+# Run once to install spark
 # sparklyr::spark_install(version = "4.0.1")
 # Run to check spark installed correctly 
 sparklyr::spark_installed_versions()
@@ -46,7 +46,8 @@ baseline_sc <- sparklyr::spark_read_csv(sc,
                                         columns = baseline_column_types)
 
 strike_data_sc <- waterloo_data_sc %>% 
-  dplyr::filter(msoa = )
+  dplyr::filter(msoa %in% msoa) %>% 
+  # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
   dplyr::filter(time >= "08:00:00",
                 time <= "19:00:00") %>% 
@@ -58,6 +59,7 @@ strike_data_sc <- waterloo_data_sc %>%
   dplyr::mutate(weekday = dayofweek(date)) %>% 
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup() %>% 
+  # Joining baseline data
   dplyr::left_join(baseline_sc, by = join_by(weekday, msoa)) %>% 
   dplyr::filter(date >= "2023-03-13") %>% 
   dplyr::mutate(peopleCount_perc = peopleCount / people_count_baseline,
@@ -72,6 +74,7 @@ strike_data_sc <- waterloo_data_sc %>%
                       values_to = "perc") %>% 
   sparklyr::sdf_register(name = "strike_data")
 
+# Collecting reduced data for plotting
 strike_data_to_plot <- strike_data_sc %>% 
   sparklyr::collect()
 
@@ -108,5 +111,5 @@ ggplot(data = strike_data_to_plot, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
-# When finished using Spark
-spark_disconnect(sc)
+# Uncomment and run when finished using Spark
+# spark_disconnect(sc)
