@@ -14,7 +14,7 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
-waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
+waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                             time,
                                             msoa,
                                             peopleCount,
@@ -22,7 +22,7 @@ waterloo_data <- DBI::dbGetQuery(con, "SELECT date,
                                             workerSum, 
                                             visitorSum
                                      FROM msoa_counts
-                                     WHERE msoa = 'E02006801'")
+                                     WHERE msoa IN (", all_msoa, ")", sep = ""))
 
 readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
 

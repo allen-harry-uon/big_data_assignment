@@ -1,5 +1,9 @@
 ## Setting variables so they're not hard coded
 
+# MSOA shape codes to filter by (as if reading entire dataset from BigQuery)
+msoa <- c("E02006801")
+all_msoa <- toString(sQuote(msoa, q = F))
+
 # Baseline dates
 baseline_start <- "2023-03-06"
 baseline_end <- "2023-03-12"
