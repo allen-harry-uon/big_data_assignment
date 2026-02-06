@@ -10,6 +10,15 @@ sparklyr::spark_installed_versions()
 # Connect to local cluster
 sc <- sparklyr::spark_connect(master = "local", version = "4.0.1")
 
+# DO NOT RUN
+# Example of how to read the data from BigQuery to Spark directly 
+# The version of R and Spark are incompatible with this method
+# spark_bq_example <- sparkbq::spark_read_bigquery(sc, name = "test_table",
+#                                                  billingProjectId = "dtsg-ana-transporthubcrowdmon",
+#                                                  datasetId = "crowd_monitoring_api",
+#                                                  tableId = "msoa_counts",
+#                                                  serviceAccountKeyFile = bigrquery::bq_auth(path = jsonencryptor::secret_read("service_secret.json")))
+
 # Specifying column types to allow for faster reading into Spark
 column_types <- c(date = "Date",
                   time = "POSIXct",
@@ -37,6 +46,7 @@ baseline_sc <- sparklyr::spark_read_csv(sc,
                                         columns = baseline_column_types)
 
 strike_data_sc <- waterloo_data_sc %>% 
+  dplyr::filter(msoa = )
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
   dplyr::filter(time >= "08:00:00",
                 time <= "19:00:00") %>% 
