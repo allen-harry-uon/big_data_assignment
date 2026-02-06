@@ -1,6 +1,7 @@
 library(sparklyr)
 library(dplyr)
 library(ggplot2)
+library(leaflet)
 
 # Run once to install spark
 # sparklyr::spark_install(version = "4.0.1")
@@ -111,12 +112,6 @@ ggplot(data = strike_data_to_plot, aes(x = date,
            x = as.Date("2023-05-21"),
            y = 1.35)+
   labs(colour = "Reason for travel")
-
-# Plotting most recent data on map
-waterloo_mapped <- waterloo_data_sc %>% 
-  dplyr::filter(date == max(date),
-                time == max(time)) %>% 
-  sparklyr::collect()
 
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
