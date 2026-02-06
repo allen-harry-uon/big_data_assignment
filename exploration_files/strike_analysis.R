@@ -5,7 +5,7 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
-source("variables.R")
+source("exploration_files/variables.R")
 
 ##Authenticate for BQ connection
 bigrquery::bq_auth(path = jsonencryptor::secret_read("service_secret.json"))
@@ -29,7 +29,7 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
 readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
 
 strike_data <- waterloo_data %>% 
-  dplyr::filter(msoa %in% msoa) %>% 
+  dplyr::filter(msoa %in% msoa_codes) %>% 
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
   dplyr::group_by(date, msoa) %>% 

@@ -46,7 +46,7 @@ baseline_sc <- sparklyr::spark_read_csv(sc,
                                         columns = baseline_column_types)
 
 strike_data_sc <- waterloo_data_sc %>% 
-  dplyr::filter(msoa %in% msoa) %>% 
+  sparklyr::filter(msoa %in% msoa_codes) %>% 
   # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
   dplyr::filter(time >= "08:00:00",
@@ -78,6 +78,7 @@ strike_data_sc <- waterloo_data_sc %>%
 strike_data_to_plot <- strike_data_sc %>% 
   sparklyr::collect()
 
+# Plotting strike data
 ggplot(data = strike_data_to_plot, aes(x = date,
                                   y = perc,
                                   group = travel_reason,
@@ -110,6 +111,12 @@ ggplot(data = strike_data_to_plot, aes(x = date,
            x = as.Date("2023-05-21"),
            y = 1.35)+
   labs(colour = "Reason for travel")
+
+# Plotting most recent data on map
+waterloo_mapped <- waterloo_data_sc %>% 
+  dplyr::filter(date == max(date),
+                time == max(time)) %>% 
+  sparklyr::collect()
 
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
