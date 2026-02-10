@@ -81,11 +81,7 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
                      limits = c(0, 1.5),
                      name = "")+
   scale_x_date(name = "Date")+
-  ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
-                 panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
-                 strip.background = ggplot2::element_rect(fill = "white"),
-                 axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
-                 axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
+  chart_theme+
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
@@ -121,9 +117,23 @@ se_background <- waterloo_data %>%
                       names_to = "socioeconomic_background",
                       values_to = "sum")
 
+ggplot(data = se_background, aes(x = date,
+                                 y = sum,
+                                 group = socioeconomic_background,
+                                 colour = socioeconomic_background))+
+  geom_line()+
+  chart_theme+
+  geom_vline(xintercept = all_strike_date,
+             colour = "grey")+
+  geom_vline(xintercept = all_bank_hols,
+             colour = "grey",
+             linetype = "dashed")+
+  facet_wrap(~socioeconomic_background,
+             scales = "free")
+
 twickenham_by_gender <- waterloo_data %>% 
   dplyr::filter(msoa == twickenham_msoa) %>% 
-  dplyr::filter(date == "2023-03-11") %>% 
+  dplyr::filter(date == twickenham_rugby) %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
@@ -155,11 +165,7 @@ ggplot(data = twickenham_by_gender, aes(x = datetime,
                 ymax = ymax),
             fill = "grey", alpha = 0.3,
             inherit.aes = FALSE)+
-  ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
-                 panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
-                 strip.background = ggplot2::element_rect(fill = "white"),
-                 axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
-                 axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
+  chart_theme+
   scale_x_datetime(name = "",
                    date_labels = "%H:%M")+
   scale_y_continuous(labels = scales::comma,
