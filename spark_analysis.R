@@ -134,5 +134,53 @@ ggplot(data = strike_data_to_plot, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
+# Socioecomonic analysis using Spark
+se_background_sc <- waterloo_data_sc %>% 
+  # Using Spark date_format transformation as native R functions not compatible
+  dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
+  dplyr::filter(time >= "08:00:00",
+                time <= "19:00:00") %>% 
+  dplyr::group_by(date, msoa) %>% 
+  dplyr::summarise(seGradeABSum = sum(seGradeABSum),
+                   seGradeC1Sum = sum(seGradeC1Sum),
+                   seGradeC2Sum = sum(seGradeC2Sum),
+                   seGradeDESum = sum(seGradeDESum)) %>% 
+  dplyr::mutate(weekday = dayofweek(date)) %>% 
+  dplyr::filter(between(weekday, 2, 6)) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::left_join(se_baseline_sc, by = join_by(msoa, weekday)) %>% 
+  dplyr::filter(date >= "2023-03-13") %>% 
+  dplyr::mutate(AB_perc = seGradeABSum / AB_baseline,
+                C1_perc = seGradeC1Sum / C1_baseline,
+                C2_perc = seGradeC2Sum / C2_baseline,
+                DE_perc = seGradeDESum / DE_baseline) %>% 
+  # Filtering for area after aggregating whole data
+  sparklyr::filter(msoa == waterloo_msoa) %>% 
+  dplyr::select(date, AB_perc, C1_perc, C2_perc, DE_perc) %>% 
+  tidyr::pivot_longer(cols = c(AB_perc, C1_perc, C2_perc, DE_perc),
+                      names_to = "socioeconomic_background",
+                      values_to = "perc") %>% 
+  sparklyr::collect()
+
+ggplot(data = se_background_sc, aes(x = date,
+                                    y = perc,
+                                    group = socioeconomic_background,
+                                    colour = socioeconomic_background))+
+  geom_line()+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 1.2))+
+  chart_theme+
+  geom_hline(yintercept = 1,
+             colour = "black",
+             linewidth = 1)+
+  geom_vline(xintercept = all_strike_date,
+             colour = "grey")+
+  geom_vline(xintercept = all_bank_hols,
+             colour = "grey",
+             linetype = "dashed")+
+  facet_wrap(~socioeconomic_background,
+             scales = "free")
+
+
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
