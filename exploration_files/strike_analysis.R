@@ -117,12 +117,37 @@ se_background <- waterloo_data %>%
                       names_to = "socioeconomic_background",
                       values_to = "sum")
 
-ggplot(data = se_background, aes(x = date,
-                                 y = sum,
+se_baseline <- se_background %>% 
+  dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
+  dplyr::select(-date) %>% 
+  dplyr::rename(AB_baseline = seGradeABSum,
+                C1_baseline = seGradeC1Sum,
+                C2_baseline = seGradeC2Sum,
+                DE_baseline = seGradeDESum)
+
+se_with_baseline <- se_background %>% 
+  dplyr::left_join(se_baseline, by = join_by(msoa, weekday)) %>% 
+  dplyr::filter(date >= "2023-03-13") %>% 
+  dplyr::mutate(AB_perc = seGradeABSum / AB_baseline,
+                C1_perc = seGradeC1Sum / C1_baseline,
+                C2_perc = seGradeC2Sum / C2_baseline,
+                DE_perc = seGradeDESum / DE_baseline) %>% 
+  dplyr::select(date, AB_perc, C1_perc, C2_perc, DE_perc) %>% 
+  tidyr::pivot_longer(cols = c(AB_perc, C1_perc, C2_perc, DE_perc),
+                      names_to = "socioeconomic_background",
+                      values_to = "perc")
+
+ggplot(data = se_with_baseline, aes(x = date,
+                                 y = perc,
                                  group = socioeconomic_background,
                                  colour = socioeconomic_background))+
   geom_line()+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 1.2))+
   chart_theme+
+  geom_hline(yintercept = 1,
+             colour = "black",
+             linewidth = 1)+
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
