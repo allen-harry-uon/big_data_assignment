@@ -5,7 +5,7 @@ library(sf)
 # MSOA shape codes to filter by (as if reading entire dataset from BigQuery)
 msoa_codes <- c("E02006801", "E02000794")
 all_msoa <- toString(sQuote(msoa_codes, q = F))
-
+# Specific msoa codes
 waterloo_msoa <- "E02006801"
 twickenham_msoa <- "E02000794"
 
@@ -14,11 +14,11 @@ msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(Decembe
 selected_shapes <- msoa_shapefile %>% 
   dplyr::filter(MSOA21CD %in% msoa_codes)
 
-# Baseline dates
+## Baseline dates
 baseline_start <- "2023-03-06"
 baseline_end <- "2023-03-12"
 
-# Strike dates
+## Strike dates
 strike_date_1 <- "2023-03-15"
 strike_date_2 <- "2023-03-16"
 strike_date_3 <- "2023-03-18"
@@ -27,6 +27,7 @@ strike_date_5 <- "2023-05-13"
 strike_date_6 <- "2023-03-30"
 strike_date_7 <- "2023-04-01"
 
+# Transforming date strings to Date type
 all_strike_date <- c(strike_date_1,strike_date_2, strike_date_3,
                      strike_date_4, strike_date_5, strike_date_6,
                      strike_date_7) %>% 
@@ -40,9 +41,9 @@ bank_hol_date_3 <- "2023-05-29"
 all_bank_hols <- c(bank_hol_date_1, bank_hol_date_2, bank_hol_date_3) %>% 
   purrr::map_vec(as.Date)
 
-# Event dates
+## Event dates
 twickenham_rugby <- "2023-03-11"
-
+# Event times to highlight on chart
 rugby_times <- data.frame(
   xmin = c("2023-03-11 14:00"),
   xmax = c("2023-03-11 19:00"),
@@ -65,6 +66,7 @@ palette <- c("#004D3B", # Corporate Green
              "#D5811A", # Coastal Line
              "#FE5500") # Traffic Tanago
 
+# Standard chart theme
 chart_theme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
                               panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
                               strip.background = ggplot2::element_rect(fill = "white"),
