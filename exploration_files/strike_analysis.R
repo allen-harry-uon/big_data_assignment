@@ -24,7 +24,11 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                             workerSum, 
                                             visitorSum,
                                             maleSum, 
-                                            femaleSum
+                                            femaleSum,
+                                            seGradeC2Sum,
+                                            seGradeC1Sum,
+                                            seGradeDESum,
+                                            seGradeABSum
                                      FROM msoa_counts
                                      WHERE msoa IN (", all_msoa, ")", sep = ""))
 
@@ -67,7 +71,6 @@ waterloo_with_baseline <- strike_data %>%
                       names_to = "travel_reason",
                       values_to = "perc")
   
-
 ggplot(data = waterloo_with_baseline, aes(x = date,
                                           y = perc,
                                           group = travel_reason,
