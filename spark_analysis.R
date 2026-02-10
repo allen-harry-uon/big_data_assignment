@@ -111,37 +111,6 @@ strike_data_sc <- waterloo_data_sc %>%
 strike_data_to_plot <- strike_data_sc %>% 
   sparklyr::collect()
 
-# Plotting strike data
-ggplot(data = strike_data_to_plot, aes(x = date,
-                                  y = perc,
-                                  group = travel_reason,
-                                  colour = travel_reason))+
-  geom_line(linewidth = 1)+
-  scale_colour_manual(values = palette)+
-  scale_y_continuous(labels = scales::label_percent(),
-                     name = "")+
-  scale_x_date(name = "Date")+
-  chart_theme+
-  # Adding strike and bank holiday dates
-  geom_vline(xintercept = all_strike_date,
-             colour = "grey")+
-  geom_vline(xintercept = all_bank_hols,
-             colour = "grey",
-             linetype = "dashed")+
-  # Adding baseline line at 100%
-  geom_hline(yintercept = 1,
-             colour = "black",
-             size = 1)+
-  annotate("label",
-           label = "Solid line =\n Train strikes",
-           x = as.Date("2023-05-21"),
-           y = 1.5)+
-  annotate("label",
-           label = "Dashed line =\n Bank holidays",
-           x = as.Date("2023-05-21"),
-           y = 1.35)+
-  labs(colour = "Reason for travel")
-
 # Socioeconomic analysis using Spark
 se_background_sc <- waterloo_data_sc %>% 
   # Using Spark date_format transformation as native R functions not compatible
@@ -173,29 +142,6 @@ se_background_sc <- waterloo_data_sc %>%
                       values_to = "perc") %>% 
   sparklyr::collect()
 
-test <- se_background_sc %>% 
-  sparklyr::collect()
-
-ggplot(data = se_background_sc, aes(x = date,
-                                    y = perc,
-                                    group = socioeconomic_background,
-                                    colour = socioeconomic_background))+
-  geom_line()+
-  scale_y_continuous(labels = scales::percent)+
-  chart_theme+
-  # Adding baseline line at 100%
-  geom_hline(yintercept = 1,
-             colour = "black",
-             linewidth = 1)+
-  # Adding strike and bank holiday dates
-  geom_vline(xintercept = all_strike_date,
-             colour = "grey")+
-  geom_vline(xintercept = all_bank_hols,
-             colour = "grey",
-             linetype = "dashed")+
-  facet_wrap(~socioeconomic_background,
-             scales = "free")
-
 # Gender analysis
 twickenham_by_gender_sc <- waterloo_data_sc %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
@@ -213,28 +159,6 @@ twickenham_by_gender_sc <- waterloo_data_sc %>%
                       names_to = "gender",
                       values_to = "count") %>% 
   sparklyr::collect()
-
-test <- twickenham_by_gender_sc %>% 
-  sparklyr::collect()
-
-ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
-                                        y = count,
-                                        group = gender,
-                                        colour = gender))+
-  geom_line()+
-  # Rectangle to highlight event timings plus 2 hours either side
-  geom_rect(data = rugby_times,
-            aes(xmin = xmin, 
-                xmax = xmax, 
-                ymin = ymin, 
-                ymax = ymax),
-            fill = "grey", alpha = 0.3,
-            inherit.aes = FALSE)+
-  chart_theme+
-  scale_x_datetime(name = "",
-                   date_labels = "%H:%M")+
-  scale_y_continuous(labels = scales::comma,
-                     name = "")
 
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
