@@ -43,6 +43,15 @@ all_bank_hols <- c(bank_hol_date_1, bank_hol_date_2, bank_hol_date_3) %>%
 # Event dates
 twickenham_rugby <- "2023-03-11"
 
+rugby_times <- data.frame(
+  xmin = c("2023-03-11 14:00"),
+  xmax = c("2023-03-11 19:00"),
+  ymin = -Inf,
+  ymax = Inf
+) %>% 
+  dplyr::mutate(xmin = as.POSIXct(xmin),
+                xmax = as.POSIXct(xmax))
+
 # Chart colour palette
 palette <- c("#004D3B", # Corporate Green
              "#3C9F8B", # Transit Green
