@@ -103,7 +103,7 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
 
 twickenham_by_gender <- waterloo_data %>% 
   dplyr::filter(msoa == twickenham_msoa) %>% 
-  dplyr::filter(date >= "2023-03-10" & date <= "2023-03-12") %>% 
+  dplyr::filter(date == "2023-03-11") %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
@@ -115,10 +115,8 @@ twickenham_by_gender <- waterloo_data %>%
                       values_to = "count")
 
 nighttime <- data.frame(
-  xmin = c("2023-03-03 00:00:00", "2023-03-03 22:00:00", "2023-03-04 22:00:00",
-           "2023-03-05 22:00:00", "2023-03-06 22:00:00", "2023-03-07 22:00:00"),
-  xmax = c("2023-03-03 06:00:00", "2023-03-04 06:00:00", "2023-03-05 06:00:00",
-           "2023-03-06 06:00:00", "2023-03-07 06:00:00", "2023-03-08 00:00:00"),
+  xmin = c("2023-03-11 14:00"),
+  xmax = c("2023-03-11 19:00"),
   ymin = -Inf,
   ymax = Inf
 ) %>% 
@@ -126,7 +124,7 @@ nighttime <- data.frame(
                 xmax = as.POSIXct(xmax))
   
 
-ggplot(data = waterloo_by_gender, aes(x = datetime,
+ggplot(data = twickenham_by_gender, aes(x = datetime,
                                       y = count,
                                       group = gender,
                                       colour = gender))+
