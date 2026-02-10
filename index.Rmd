@@ -17,11 +17,11 @@ source("spark_analysis.R")
 
 ```
 
-# Train strikes between March and May
+# Train strikes between March and May by travel reason
 
 ```{r fig.width=8, fig.retina=3}
 
-p <- ggplot(data = strike_data_to_plot, aes(x = date,
+ggplot(data = strike_data_to_plot, aes(x = date,
                                   y = perc,
                                   group = travel_reason,
                                   colour = travel_reason))+
@@ -53,10 +53,56 @@ p <- ggplot(data = strike_data_to_plot, aes(x = date,
            x = as.Date("2023-05-21"),
            y = 1.35)+
   labs(colour = "Reason for travel")
-
-print(p)
 ```
 
 This chart shows the number of people in the area surrounding Waterloo train station between the times of 8am and 7pm Monday to Friday to establish the effects that train strikes have on travel. Strike days as well as bank holidays are noted on the chart to allow insight into why there have been significant dips in 
 
 Travel across all recorded reasons for travel we're especially affected in the March strikes, which could be explained by the quick succession of multiple days of strikes. Periods where there were only two days of striks appear to have less of an impact. 
+
+# Train strikes between March and May by socioeconomic background
+
+```{r fig.width=8, fig.retina=3}
+
+ggplot(data = se_background_sc, aes(x = date,
+                                         y = perc,
+                                         group = socioeconomic_background,
+                                         colour = socioeconomic_background))+
+  geom_line()+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0, 1.2))+
+  chart_theme+
+  geom_hline(yintercept = 1,
+             colour = "black",
+             linewidth = 1)+
+  geom_vline(xintercept = all_strike_date,
+             colour = "grey")+
+  geom_vline(xintercept = all_bank_hols,
+             colour = "grey",
+             linetype = "dashed")+
+  facet_wrap(~socioeconomic_background,
+             scales = "free")
+
+```
+
+# Breakdown of travel by gender surrounding a six nations rugby match in Twickenham
+```{r fig.width=8, fig.retina=3}
+ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
+                                                y = count,
+                                                group = gender,
+                                                colour = gender))+
+  geom_line()+
+  geom_rect(data = rugby_times,
+            aes(xmin = xmin, 
+                xmax = xmax, 
+                ymin = ymin, 
+                ymax = ymax),
+            fill = "grey", alpha = 0.3,
+            inherit.aes = FALSE)+
+  chart_theme+
+  scale_x_datetime(name = "",
+                   date_labels = "%H:%M")+
+  scale_y_continuous(labels = scales::comma,
+                     name = "")
+
+
+```
