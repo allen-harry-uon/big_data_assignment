@@ -111,11 +111,7 @@ se_background <- waterloo_data %>%
                    seGradeDESum = sum(seGradeDESum)) %>% 
   dplyr::mutate(weekday = lubridate::wday(date)) %>% 
   dplyr::filter(between(weekday, 2, 6)) %>% 
-  dplyr::ungroup() %>% 
-  tidyr::pivot_longer(cols = c(seGradeABSum, seGradeC1Sum, 
-                               seGradeC2Sum, seGradeDESum),
-                      names_to = "socioeconomic_background",
-                      values_to = "sum")
+  dplyr::ungroup()
 
 se_baseline <- se_background %>% 
   dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
