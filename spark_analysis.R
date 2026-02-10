@@ -29,7 +29,13 @@ column_types <- c(date = "Date",
                   peopleCount = "integer",
                   residentSum = "integer",
                   workerSum = "integer",
-                  visitorSum = "integer")
+                  visitorSum = "integer",
+                  maleSum = "integer",
+                  femaleSum = "integer",
+                  seGradeC2Sum = "integer",
+                  seGradeC1Sum = "integer",
+                  seGradeDESum = "integer",
+                  seGradeABSum = "integer")
 
 baseline_column_types <- c(msoa = "character",
                            people_count_baseline = "double",
