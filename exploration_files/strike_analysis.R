@@ -5,6 +5,7 @@ library(dplyr)
 library(lubridate)
 library(ggplot2)
 
+# Getting variables 
 source("exploration_files/variables.R")
 
 ##Authenticate for BQ connection
@@ -16,6 +17,7 @@ con <- DBI::dbConnect(
   dataset = "crowd_monitoring_api"
 )
 
+# Reading in data
 waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                             time,
                                             msoa,
@@ -32,10 +34,15 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                      FROM msoa_counts
                                      WHERE msoa IN (", all_msoa, ")", sep = ""))
 
+# Writing data to csv to be read into Spark
 readr::write_csv(waterloo_data, "Data/crowd_data/waterloo_table.csv")
 
+## Strike analysis by reason for travel
+
 strike_data <- waterloo_data %>% 
+  # Filtering for selected area
   dplyr::filter(msoa == waterloo_msoa) %>% 
+  # Filtering times for the workday and commuting
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
   dplyr::group_by(date, msoa) %>% 
@@ -44,9 +51,11 @@ strike_data <- waterloo_data %>%
                    workerSum = mean(workerSum),
                    visitorSum = mean(visitorSum)) %>% 
   dplyr::mutate(weekday = lubridate::wday(date)) %>% 
+  # Removing weekend for only work week analysis
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup()
-  
+
+# Developing baseline to compare to  
 baseline <- strike_data %>% 
   dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
   dplyr::select(-date) %>% 
@@ -55,22 +64,28 @@ baseline <- strike_data %>%
                 worker_count_baseline = workerSum,
                 visitor_count_baseline = visitorSum)
 
+# Writing baseline to csv to be read into Spark
 readr::write_csv(baseline, "Data/crowd_data/baseline.csv")
 
+# Joining strike analysis with baseline
 waterloo_with_baseline <- strike_data %>% 
   dplyr::left_join(baseline, by = join_by(weekday, msoa)) %>% 
+  # Start only after baseline finishes
   dplyr::filter(date >= "2023-03-13") %>% 
+  # Calculate % of crowds compared to baseline
   dplyr::mutate(peopleCount_perc = peopleCount / people_count_baseline,
                 residentSum_perc = residentSum / resident_count_baseline,
                 workerSum_perc = workerSum / worker_count_baseline,
                 visitorSum_perc = visitorSum / visitor_count_baseline) %>% 
   dplyr::select(date, residentSum_perc, workerSum_perc, 
                 visitorSum_perc) %>% 
+  # Pivot table to plot in one go
   tidyr::pivot_longer(cols = c(residentSum_perc, workerSum_perc, 
                                visitorSum_perc),
                       names_to = "travel_reason",
                       values_to = "perc")
-  
+
+# Plotting strike data  
 ggplot(data = waterloo_with_baseline, aes(x = date,
                                           y = perc,
                                           group = travel_reason,
@@ -82,11 +97,13 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
                      name = "")+
   scale_x_date(name = "Date")+
   chart_theme+
+  # Highlighting strike and bank holiday dates
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
              colour = "grey",
              linetype = "dashed")+
+  # Setting baseline
   geom_hline(yintercept = 1,
              colour = "black",
              size = 1)+
@@ -100,7 +117,10 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
+## Strike analysis by socioeconomic background
+
 se_background <- waterloo_data %>% 
+  # Filter for same area and time as reason for travel analysis
   dplyr::filter(msoa == waterloo_msoa) %>% 
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
@@ -110,9 +130,11 @@ se_background <- waterloo_data %>%
                    seGradeC2Sum = sum(seGradeC2Sum),
                    seGradeDESum = sum(seGradeDESum)) %>% 
   dplyr::mutate(weekday = lubridate::wday(date)) %>% 
+  # Filter out weekends for work week analysis
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup()
 
+# Developing baseline for socioeconomic background
 se_baseline <- se_background %>% 
   dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
   dplyr::select(-date) %>% 
@@ -121,8 +143,10 @@ se_baseline <- se_background %>%
                 C2_baseline = seGradeC2Sum,
                 DE_baseline = seGradeDESum)
 
+# Writing socioeconomic baseline to csv to be read into Spark
 readr::write_csv(se_baseline, "Data/crowd_data/se_baseline.csv")
 
+# Joining analysis with baseline
 se_with_baseline <- se_background %>% 
   dplyr::left_join(se_baseline, by = join_by(msoa, weekday)) %>% 
   dplyr::filter(date >= "2023-03-13") %>% 
@@ -135,6 +159,7 @@ se_with_baseline <- se_background %>%
                       names_to = "socioeconomic_background",
                       values_to = "perc")
 
+# Plotting socioeconomic analysis
 ggplot(data = se_with_baseline, aes(x = date,
                                  y = perc,
                                  group = socioeconomic_background,
@@ -154,7 +179,10 @@ ggplot(data = se_with_baseline, aes(x = date,
   facet_wrap(~socioeconomic_background,
              scales = "free")
 
+## Analysis of travel by gender during large events
+
 twickenham_by_gender <- waterloo_data %>% 
+  # Filter by chosen area and date
   dplyr::filter(msoa == twickenham_msoa) %>% 
   dplyr::filter(date == twickenham_rugby) %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
@@ -167,11 +195,13 @@ twickenham_by_gender <- waterloo_data %>%
                       names_to = "gender",
                       values_to = "count")
 
+# Plotting travel by gender during large event
 ggplot(data = twickenham_by_gender, aes(x = datetime,
                                       y = count,
                                       group = gender,
                                       colour = gender))+
   geom_line()+
+  # Highlighting time of event plus 2 hours either side
   geom_rect(data = nighttime,
             aes(xmin = xmin, 
                 xmax = xmax, 
