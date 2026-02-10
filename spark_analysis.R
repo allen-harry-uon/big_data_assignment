@@ -181,6 +181,39 @@ ggplot(data = se_background_sc, aes(x = date,
   facet_wrap(~socioeconomic_background,
              scales = "free")
 
+# Gender analysis
+twickenham_by_gender_sc <- waterloo_data_sc %>% 
+  dplyr::filter(msoa == twickenham_msoa) %>% 
+  dplyr::filter(date == twickenham_rugby) %>% 
+  dplyr::mutate(hour = lubridate::hour(time)) %>% 
+  dplyr::group_by(date, hour, msoa) %>% 
+  dplyr::summarise(maleHourly = sum(maleSum),
+                   femaleHourly = sum(femaleSum)) %>% 
+  dplyr::mutate(datetime = as.POSIXct(paste(date, hour))) %>% 
+  dplyr::ungroup() %>% 
+  tidyr::pivot_longer(cols = c(maleHourly, femaleHourly),
+                      names_to = "gender",
+                      values_to = "count") %>% 
+  sparklyr::collect()
+
+ggplot(data = twickenham_by_gender, aes(x = datetime,
+                                        y = count,
+                                        group = gender,
+                                        colour = gender))+
+  geom_line()+
+  geom_rect(data = nighttime,
+            aes(xmin = xmin, 
+                xmax = xmax, 
+                ymin = ymin, 
+                ymax = ymax),
+            fill = "grey", alpha = 0.3,
+            inherit.aes = FALSE)+
+  chart_theme+
+  scale_x_datetime(name = "",
+                   date_labels = "%H:%M")+
+  scale_y_continuous(labels = scales::comma,
+                     name = "")
+
 
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
