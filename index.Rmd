@@ -11,7 +11,13 @@ resource_files:
 ```{r include=FALSE}
 knitr::opts_chunk$set(echo=FALSE)
 
+library(jsonencryptor)
+library(bigrquery)
+library(DBI)
+library(dplyr)
+library(lubridate)
 library(ggplot2)
+library(sparklyr)
 
 source("spark_analysis.R")
 
