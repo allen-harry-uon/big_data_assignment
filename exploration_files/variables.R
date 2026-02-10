@@ -3,8 +3,11 @@ library(purrr)
 library(sf)
 
 # MSOA shape codes to filter by (as if reading entire dataset from BigQuery)
-msoa_codes <- c("E02006801")
+msoa_codes <- c("E02006801", "E02000794")
 all_msoa <- toString(sQuote(msoa_codes, q = F))
+
+waterloo_msoa <- "E02006801"
+twickenham_msoa <- "E02000794"
 
 # Reading shapefiles for mapping
 msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
