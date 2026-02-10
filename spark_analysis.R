@@ -196,7 +196,7 @@ twickenham_by_gender_sc <- waterloo_data_sc %>%
                       values_to = "count") %>% 
   sparklyr::collect()
 
-ggplot(data = twickenham_by_gender, aes(x = datetime,
+ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
                                         y = count,
                                         group = gender,
                                         colour = gender))+
@@ -213,7 +213,6 @@ ggplot(data = twickenham_by_gender, aes(x = datetime,
                    date_labels = "%H:%M")+
   scale_y_continuous(labels = scales::comma,
                      name = "")
-
 
 # Uncomment and run when finished using Spark
 # spark_disconnect(sc)
