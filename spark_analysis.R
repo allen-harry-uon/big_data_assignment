@@ -55,19 +55,22 @@ se_baseline_column_types <- c(msoa = "character",
 # Reading in data to use for analysis
 waterloo_data_sc <- sparklyr::spark_read_csv(sc, 
                                              name = "waterloo_data",
-                                             path = "Data/crowd_data/waterloo_table.csv", 
-                                             columns = column_types)
+                                             path = "Data/crowd_data/waterloo_table.csv",
+                                             columns = column_types,
+                                             overwrite = TRUE)
 
 # Reading in baselines for reason for travel and socioeconomic background
 baseline_sc <- sparklyr::spark_read_csv(sc,
                                         name = "baseline",
                                         path = "Data/crowd_data/baseline.csv",
-                                        columns = baseline_column_types)
+                                        columns = baseline_column_types,
+                                        overwrite = TRUE)
 
 se_baseline_sc <- sparklyr::spark_read_csv(sc,
                                            name = "se_baseline",
                                            path = "Data/crowd_data/se_baseline.csv",
-                                           columns = se_baseline_column_types)
+                                           columns = se_baseline_column_types,
+                                           overwrite = TRUE)
 
 # Analysing strike data by reason for travel
 strike_data_sc <- waterloo_data_sc %>% 
@@ -116,7 +119,6 @@ ggplot(data = strike_data_to_plot, aes(x = date,
   geom_line(linewidth = 1)+
   scale_colour_manual(values = palette)+
   scale_y_continuous(labels = scales::label_percent(),
-                     limits = c(0, 1.5),
                      name = "")+
   scale_x_date(name = "Date")+
   chart_theme+
@@ -171,13 +173,15 @@ se_background_sc <- waterloo_data_sc %>%
                       values_to = "perc") %>% 
   sparklyr::collect()
 
+test <- se_background_sc %>% 
+  sparklyr::collect()
+
 ggplot(data = se_background_sc, aes(x = date,
                                     y = perc,
                                     group = socioeconomic_background,
                                     colour = socioeconomic_background))+
   geom_line()+
-  scale_y_continuous(labels = scales::percent,
-                     limits = c(0, 1.2))+
+  scale_y_continuous(labels = scales::percent)+
   chart_theme+
   # Adding baseline line at 100%
   geom_hline(yintercept = 1,
@@ -199,15 +203,18 @@ twickenham_by_gender_sc <- waterloo_data_sc %>%
   dplyr::summarise(maleHourly = sum(maleSum),
                    femaleHourly = sum(femaleSum)) %>% 
   dplyr::mutate(datetime = as.POSIXct(paste(date, hour))) %>% 
-  # Filter for area of event
-  dplyr::filter(msoa == twickenham_msoa) %>% 
   # Filter for date of event
   dplyr::filter(date == twickenham_rugby) %>% 
+  # Filter for area of event
+  dplyr::filter(msoa == twickenham_msoa) %>% 
   dplyr::ungroup() %>% 
   # Pivot table to plot male/female data in one go
   tidyr::pivot_longer(cols = c(maleHourly, femaleHourly),
                       names_to = "gender",
                       values_to = "count") %>% 
+  sparklyr::collect()
+
+test <- twickenham_by_gender_sc %>% 
   sparklyr::collect()
 
 ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
