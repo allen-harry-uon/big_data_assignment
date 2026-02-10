@@ -22,7 +22,9 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                             peopleCount,
                                             residentSum, 
                                             workerSum, 
-                                            visitorSum
+                                            visitorSum,
+                                            maleSum, 
+                                            femaleSum
                                      FROM msoa_counts
                                      WHERE msoa IN (", all_msoa, ")", sep = ""))
 
@@ -40,7 +42,7 @@ strike_data <- waterloo_data %>%
   dplyr::mutate(weekday = lubridate::wday(date)) %>% 
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup()
-
+  
 baseline <- strike_data %>% 
   dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
   dplyr::select(-date) %>% 
@@ -98,3 +100,11 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
            x = as.Date("2023-05-21"),
            y = 1.35)+
   labs(colour = "Reason for travel")
+
+waterloo_by_gender <- waterloo_data %>% 
+  dplyr::filter(msoa %in% msoa_codes) %>% 
+  dplyr::mutate(hour = lubridate::hour(time)) %>% 
+  dplyr::group_by(date, hour, msoa) %>% 
+  dplyr::summarise(maleHourly = sum(maleSum),
+                   femaleHourly = sum(femaleSum)) %>% 
+  dplyr::mutate(datetime = as.POSIXct(paste(date, hour), format = "%Y-%m-%d %H"))
