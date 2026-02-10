@@ -167,15 +167,6 @@ twickenham_by_gender <- waterloo_data %>%
                       names_to = "gender",
                       values_to = "count")
 
-nighttime <- data.frame(
-  xmin = c("2023-03-11 14:00"),
-  xmax = c("2023-03-11 19:00"),
-  ymin = -Inf,
-  ymax = Inf
-) %>% 
-  dplyr::mutate(xmin = as.POSIXct(xmin),
-                xmax = as.POSIXct(xmax))
-  
 ggplot(data = twickenham_by_gender, aes(x = datetime,
                                       y = count,
                                       group = gender,
