@@ -61,6 +61,11 @@ baseline_sc <- sparklyr::spark_read_csv(sc,
                                         path = "Data/crowd_data/baseline.csv",
                                         columns = baseline_column_types)
 
+se_baseline_sc <- sparklyr::spark_read_csv(sc,
+                                           name = "se_baseline",
+                                           path = "Data/crowd_data/se_baseline.csv",
+                                           columns = se_baseline_column_types)
+
 strike_data_sc <- waterloo_data_sc %>% 
   # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
