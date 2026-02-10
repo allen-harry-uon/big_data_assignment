@@ -40,6 +40,9 @@ bank_hol_date_3 <- "2023-05-29"
 all_bank_hols <- c(bank_hol_date_1, bank_hol_date_2, bank_hol_date_3) %>% 
   purrr::map_vec(as.Date)
 
+# Event dates
+twickenham_rugby <- "2023-03-11"
+
 # Chart colour palette
 palette <- c("#004D3B", # Corporate Green
              "#3C9F8B", # Transit Green
@@ -52,3 +55,9 @@ palette <- c("#004D3B", # Corporate Green
              "#969810", # Country Green
              "#D5811A", # Coastal Line
              "#FE5500") # Traffic Tanago
+
+chart_theme <- ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
+                              panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
+                              strip.background = ggplot2::element_rect(fill = "white"),
+                              axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
+                              axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))
