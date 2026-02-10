@@ -51,11 +51,9 @@ Outputs/
 .Rproj.user
 
 #Common output type
-*.html
 *.docx
 *.doc
 *.pdf
-*.md
 ##Your readme is cool though
 !README.md
 
