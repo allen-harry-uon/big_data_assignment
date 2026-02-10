@@ -104,6 +104,23 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
+se_background <- waterloo_data %>% 
+  dplyr::filter(msoa == waterloo_msoa) %>% 
+  dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
+                hms::as_hms(time) <= hms("19:00:00")) %>% 
+  dplyr::group_by(date, msoa) %>% 
+  dplyr::summarise(seGradeABSum = sum(seGradeABSum),
+                   seGradeC1Sum = sum(seGradeC1Sum),
+                   seGradeC2Sum = sum(seGradeC2Sum),
+                   seGradeDESum = sum(seGradeDESum)) %>% 
+  dplyr::mutate(weekday = lubridate::wday(date)) %>% 
+  dplyr::filter(between(weekday, 2, 6)) %>% 
+  dplyr::ungroup() %>% 
+  tidyr::pivot_longer(cols = c(seGradeABSum, seGradeC1Sum, 
+                               seGradeC2Sum, seGradeDESum),
+                      names_to = "socioeconomic_background",
+                      values_to = "sum")
+
 twickenham_by_gender <- waterloo_data %>% 
   dplyr::filter(msoa == twickenham_msoa) %>% 
   dplyr::filter(date == "2023-03-11") %>% 
@@ -126,7 +143,6 @@ nighttime <- data.frame(
   dplyr::mutate(xmin = as.POSIXct(xmin),
                 xmax = as.POSIXct(xmax))
   
-
 ggplot(data = twickenham_by_gender, aes(x = datetime,
                                       y = count,
                                       group = gender,
