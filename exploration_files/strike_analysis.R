@@ -31,7 +31,7 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
 readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
 
 strike_data <- waterloo_data %>% 
-  dplyr::filter(msoa %in% msoa_codes) %>% 
+  dplyr::filter(msoa == waterloo_msoa) %>% 
   dplyr::filter(hms::as_hms(time) >= hms("08:00:00"),
                 hms::as_hms(time) <= hms("19:00:00")) %>% 
   dplyr::group_by(date, msoa) %>% 
@@ -101,8 +101,8 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
-waterloo_by_gender <- waterloo_data %>% 
-  dplyr::filter(msoa %in% msoa_codes) %>% 
+twickenham_by_gender <- waterloo_data %>% 
+  dplyr::filter(msoa == twickenham_msoa) %>% 
   dplyr::filter(date >= "2023-03-10" & date <= "2023-03-12") %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
