@@ -32,7 +32,7 @@ waterloo_data <- DBI::dbGetQuery(con, paste("SELECT date,
                                      FROM msoa_counts
                                      WHERE msoa IN (", all_msoa, ")", sep = ""))
 
-readr::write_csv(waterloo_data, "Data/waterloo_table.csv")
+readr::write_csv(waterloo_data, "Data/crowd_data/waterloo_table.csv")
 
 strike_data <- waterloo_data %>% 
   dplyr::filter(msoa == waterloo_msoa) %>% 
