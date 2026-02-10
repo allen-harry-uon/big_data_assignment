@@ -135,4 +135,13 @@ ggplot(data = twickenham_by_gender, aes(x = datetime,
                 ymin = ymin, 
                 ymax = ymax),
             fill = "grey", alpha = 0.3,
-            inherit.aes = FALSE)
+            inherit.aes = FALSE)+
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
+                 panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
+                 strip.background = ggplot2::element_rect(fill = "white"),
+                 axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
+                 axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
+  scale_x_datetime(name = "",
+                   date_labels = "%H:%M")+
+  scale_y_continuous(labels = scales::comma,
+                     name = "")
