@@ -201,7 +201,7 @@ ggplot(data = twickenham_by_gender, aes(x = datetime,
                                         group = gender,
                                         colour = gender))+
   geom_line()+
-  geom_rect(data = nighttime,
+  geom_rect(data = rugby_times,
             aes(xmin = xmin, 
                 xmax = xmax, 
                 ymin = ymin, 
