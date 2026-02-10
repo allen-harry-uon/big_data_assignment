@@ -103,7 +103,7 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
 
 waterloo_by_gender <- waterloo_data %>% 
   dplyr::filter(msoa %in% msoa_codes) %>% 
-  dplyr::filter(date >= "2023-03-01" & date <= "2023-03-06") %>% 
+  dplyr::filter(date >= "2023-03-10" & date <= "2023-03-12") %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
@@ -114,8 +114,27 @@ waterloo_by_gender <- waterloo_data %>%
                       names_to = "gender",
                       values_to = "count")
 
+nighttime <- data.frame(
+  xmin = c("2023-03-03 00:00:00", "2023-03-03 22:00:00", "2023-03-04 22:00:00",
+           "2023-03-05 22:00:00", "2023-03-06 22:00:00", "2023-03-07 22:00:00"),
+  xmax = c("2023-03-03 06:00:00", "2023-03-04 06:00:00", "2023-03-05 06:00:00",
+           "2023-03-06 06:00:00", "2023-03-07 06:00:00", "2023-03-08 00:00:00"),
+  ymin = -Inf,
+  ymax = Inf
+) %>% 
+  dplyr::mutate(xmin = as.POSIXct(xmin),
+                xmax = as.POSIXct(xmax))
+  
+
 ggplot(data = waterloo_by_gender, aes(x = datetime,
                                       y = count,
                                       group = gender,
                                       colour = gender))+
-  geom_line()
+  geom_line()+
+  geom_rect(data = nighttime,
+            aes(xmin = xmin, 
+                xmax = xmax, 
+                ymin = ymin, 
+                ymax = ymax),
+            fill = "grey", alpha = 0.3,
+            inherit.aes = FALSE)
