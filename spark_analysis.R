@@ -3,6 +3,7 @@ library(dplyr)
 library(ggplot2)
 library(leaflet)
 
+# Getting variables 
 source("exploration_files/variables.R")
 
 # Run once to install spark
@@ -13,9 +14,9 @@ sparklyr::spark_installed_versions()
 # Connect to local cluster
 sc <- sparklyr::spark_connect(master = "local", version = "4.0.1")
 
-# DO NOT RUN
-# Example of how to read the data from BigQuery to Spark directly 
-# The version of R and Spark are incompatible with this method
+## DO NOT RUN
+## Example of how to read the data from BigQuery to Spark directly 
+## The version of R and Spark are incompatible with this method
 # spark_bq_example <- sparkbq::spark_read_bigquery(sc, name = "test_table",
 #                                                  billingProjectId = "dtsg-ana-transporthubcrowdmon",
 #                                                  datasetId = "crowd_monitoring_api",
@@ -51,11 +52,13 @@ se_baseline_column_types <- c(msoa = "character",
                               DE_baseline = "integer",
                               weekday = "integer")
 
+# Reading in data to use for analysis
 waterloo_data_sc <- sparklyr::spark_read_csv(sc, 
                                              name = "waterloo_data",
                                              path = "Data/crowd_data/waterloo_table.csv", 
                                              columns = column_types)
 
+# Reading in baselines for reason for travel and socioeconomic background
 baseline_sc <- sparklyr::spark_read_csv(sc,
                                         name = "baseline",
                                         path = "Data/crowd_data/baseline.csv",
@@ -66,9 +69,11 @@ se_baseline_sc <- sparklyr::spark_read_csv(sc,
                                            path = "Data/crowd_data/se_baseline.csv",
                                            columns = se_baseline_column_types)
 
+# Analysing strike data by reason for travel
 strike_data_sc <- waterloo_data_sc %>% 
   # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
+  # Only looking at times during the workday and commuting
   dplyr::filter(time >= "08:00:00",
                 time <= "19:00:00") %>% 
   dplyr::group_by(date, msoa) %>% 
@@ -77,19 +82,22 @@ strike_data_sc <- waterloo_data_sc %>%
                    workerSum = mean(workerSum, na.rm = TRUE),
                    visitorSum = mean(visitorSum, na.rm = TRUE)) %>% 
   dplyr::mutate(weekday = dayofweek(date)) %>% 
+  # Filtering weekends to only show the work week data
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup() %>% 
   # Joining baseline data
   dplyr::left_join(baseline_sc, by = join_by(weekday, msoa)) %>% 
   dplyr::filter(date >= "2023-03-13") %>% 
+  # Calculating % of people compared to the baseline values
   dplyr::mutate(peopleCount_perc = peopleCount / people_count_baseline,
                 residentSum_perc = residentSum / resident_count_baseline,
                 workerSum_perc = workerSum / worker_count_baseline,
                 visitorSum_perc = visitorSum / visitor_count_baseline) %>% 
-  # Filtering for area after aggregating whole data
+  # Filtering for area after (hypothetically) aggregating whole data
   sparklyr::filter(msoa == waterloo_msoa) %>% 
   dplyr::select(date, residentSum_perc, workerSum_perc, 
                 visitorSum_perc) %>% 
+  # Pivoting table to plot multiple reasons for travel in one go
   tidyr::pivot_longer(cols = c(residentSum_perc, workerSum_perc, 
                                visitorSum_perc),
                       names_to = "travel_reason",
@@ -111,16 +119,14 @@ ggplot(data = strike_data_to_plot, aes(x = date,
                      limits = c(0, 1.5),
                      name = "")+
   scale_x_date(name = "Date")+
-  ggplot2::theme(panel.background = ggplot2::element_rect(fill = "white"),
-                 panel.grid.major.y = ggplot2::element_line(colour = "grey", linewidth = 0.1),
-                 strip.background = ggplot2::element_rect(fill = "white"),
-                 axis.line.x = ggplot2::element_line(colour = "black", linewidth = 1),
-                 axis.line.y = ggplot2::element_line(colour = "black", linewidth = 1))+
+  chart_theme+
+  # Adding strike and bank holiday dates
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
              colour = "grey",
              linetype = "dashed")+
+  # Adding baseline line at 100%
   geom_hline(yintercept = 1,
              colour = "black",
              size = 1)+
@@ -134,10 +140,11 @@ ggplot(data = strike_data_to_plot, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
-# Socioecomonic analysis using Spark
+# Socioeconomic analysis using Spark
 se_background_sc <- waterloo_data_sc %>% 
   # Using Spark date_format transformation as native R functions not compatible
   dplyr::mutate(time = date_format(time, "HH:mm:ss")) %>% 
+  # Only looking at times during the workday and commuting
   dplyr::filter(time >= "08:00:00",
                 time <= "19:00:00") %>% 
   dplyr::group_by(date, msoa) %>% 
@@ -146,6 +153,7 @@ se_background_sc <- waterloo_data_sc %>%
                    seGradeC2Sum = sum(seGradeC2Sum),
                    seGradeDESum = sum(seGradeDESum)) %>% 
   dplyr::mutate(weekday = dayofweek(date)) %>% 
+  # Filtering weekends to only show the work week data
   dplyr::filter(between(weekday, 2, 6)) %>% 
   dplyr::ungroup() %>% 
   dplyr::left_join(se_baseline_sc, by = join_by(msoa, weekday)) %>% 
@@ -157,6 +165,7 @@ se_background_sc <- waterloo_data_sc %>%
   # Filtering for area after aggregating whole data
   sparklyr::filter(msoa == waterloo_msoa) %>% 
   dplyr::select(date, AB_perc, C1_perc, C2_perc, DE_perc) %>% 
+  # Pivoting table to plot multiple socioeconomic background grades in one go
   tidyr::pivot_longer(cols = c(AB_perc, C1_perc, C2_perc, DE_perc),
                       names_to = "socioeconomic_background",
                       values_to = "perc") %>% 
@@ -170,9 +179,11 @@ ggplot(data = se_background_sc, aes(x = date,
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 1.2))+
   chart_theme+
+  # Adding baseline line at 100%
   geom_hline(yintercept = 1,
              colour = "black",
              linewidth = 1)+
+  # Adding strike and bank holiday dates
   geom_vline(xintercept = all_strike_date,
              colour = "grey")+
   geom_vline(xintercept = all_bank_hols,
@@ -183,14 +194,17 @@ ggplot(data = se_background_sc, aes(x = date,
 
 # Gender analysis
 twickenham_by_gender_sc <- waterloo_data_sc %>% 
-  dplyr::filter(msoa == twickenham_msoa) %>% 
-  dplyr::filter(date == twickenham_rugby) %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
                    femaleHourly = sum(femaleSum)) %>% 
   dplyr::mutate(datetime = as.POSIXct(paste(date, hour))) %>% 
+  # Filter for area of event
+  dplyr::filter(msoa == twickenham_msoa) %>% 
+  # Filter for date of event
+  dplyr::filter(date == twickenham_rugby) %>% 
   dplyr::ungroup() %>% 
+  # Pivot table to plot male/female data in one go
   tidyr::pivot_longer(cols = c(maleHourly, femaleHourly),
                       names_to = "gender",
                       values_to = "count") %>% 
@@ -201,6 +215,7 @@ ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
                                         group = gender,
                                         colour = gender))+
   geom_line()+
+  # Rectangle to highlight event timings plus 2 hours either side
   geom_rect(data = rugby_times,
             aes(xmin = xmin, 
                 xmax = xmax, 
