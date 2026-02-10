@@ -107,4 +107,11 @@ waterloo_by_gender <- waterloo_data %>%
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
                    femaleHourly = sum(femaleSum)) %>% 
-  dplyr::mutate(datetime = as.POSIXct(paste(date, hour), format = "%Y-%m-%d %H"))
+  dplyr::mutate(datetime = as.POSIXct(paste(date, hour), format = "%Y-%m-%d %H")) %>% 
+  dplyr::ungroup() %>% 
+  tidyr::pivot_longer(cols = c(maleHourly, femaleHourly),
+                      names_to = "gender",
+                      values_to = "count")
+
+ggplot(data = waterloo_by_gender, aes(x = datetime,
+                                      y = ))
