@@ -17,9 +17,9 @@ source("spark_analysis.R")
 
 ```
 
-# Train strikes between April and May
+# Train strikes between March and May
 
-```{r fig.width=8}
+```{r fig.width=8, fig.retina=3}
 
 p <- ggplot(data = strike_data_to_plot, aes(x = date,
                                   y = perc,
@@ -54,4 +54,9 @@ p <- ggplot(data = strike_data_to_plot, aes(x = date,
            y = 1.35)+
   labs(colour = "Reason for travel")
 
+print(p)
 ```
+
+This chart shows the number of people in the area surrounding Waterloo train station between the times of 8am and 7pm Monday to Friday to establish the effects that train strikes have on travel. Strike days as well as bank holidays are noted on the chart to allow insight into why there have been significant dips in 
+
+Travel across all recorded reasons for travel we're especially affected in the March strikes, which could be explained by the quick succession of multiple days of strikes. Periods where there were only two days of striks appear to have less of an impact. 
