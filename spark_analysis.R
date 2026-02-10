@@ -44,6 +44,13 @@ baseline_column_types <- c(msoa = "character",
                            visitor_count_baseline = "double",
                            weekday = "integer")
 
+se_baseline_column_types <- c(msoa = "character",
+                              AB_baseline = "integer",
+                              C1_baseline = "integer",
+                              C2_baseline = "integer",
+                              DE_baseline = "integer",
+                              weekday = "integer")
+
 waterloo_data_sc <- sparklyr::spark_read_csv(sc, 
                                              name = "waterloo_data",
                                              path = "Data/crowd_data/waterloo_table.csv", 
