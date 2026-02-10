@@ -103,6 +103,7 @@ ggplot(data = waterloo_with_baseline, aes(x = date,
 
 waterloo_by_gender <- waterloo_data %>% 
   dplyr::filter(msoa %in% msoa_codes) %>% 
+  dplyr::filter(date >= "2023-03-01" & date <= "2023-03-06") %>% 
   dplyr::mutate(hour = lubridate::hour(time)) %>% 
   dplyr::group_by(date, hour, msoa) %>% 
   dplyr::summarise(maleHourly = sum(maleSum),
@@ -114,4 +115,7 @@ waterloo_by_gender <- waterloo_data %>%
                       values_to = "count")
 
 ggplot(data = waterloo_by_gender, aes(x = datetime,
-                                      y = ))
+                                      y = count,
+                                      group = gender,
+                                      colour = gender))+
+  geom_line()
