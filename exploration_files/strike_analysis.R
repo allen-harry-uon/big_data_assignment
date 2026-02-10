@@ -125,6 +125,8 @@ se_baseline <- se_background %>%
                 C2_baseline = seGradeC2Sum,
                 DE_baseline = seGradeDESum)
 
+readr::write_csv(se_baseline, "Data/crowd_data/se_baseline.csv")
+
 se_with_baseline <- se_background %>% 
   dplyr::left_join(se_baseline, by = join_by(msoa, weekday)) %>% 
   dplyr::filter(date >= "2023-03-13") %>% 
