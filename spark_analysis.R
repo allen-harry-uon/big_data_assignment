@@ -77,10 +77,10 @@ strike_data_sc <- waterloo_data_sc %>%
   dplyr::filter(time >= "08:00:00",
                 time <= "19:00:00") %>% 
   dplyr::group_by(date, msoa) %>% 
-  dplyr::summarise(peopleCount = mean(peopleCount, na.rm = TRUE),
-                   residentSum = mean(residentSum, na.rm = TRUE),
-                   workerSum = mean(workerSum, na.rm = TRUE),
-                   visitorSum = mean(visitorSum, na.rm = TRUE)) %>% 
+  dplyr::summarise(peopleCount = sum(peopleCount, na.rm = TRUE),
+                   residentSum = sum(residentSum, na.rm = TRUE),
+                   workerSum = sum(workerSum, na.rm = TRUE),
+                   visitorSum = sum(visitorSum, na.rm = TRUE)) %>% 
   dplyr::mutate(weekday = dayofweek(date)) %>% 
   # Filtering weekends to only show the work week data
   dplyr::filter(between(weekday, 2, 6)) %>% 
