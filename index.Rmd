@@ -84,7 +84,12 @@ ggplot(data = se_background_sc, aes(x = date,
 
 ```
 
+This next chart performs the same analysis as the one above, regarding travel during train strikes, but shows how people from different socioeconomic backgrounds are affected. The grades (AB, C1, C2, DE) refer to the classification [developed by the ONS](https://ukgeographics.co.uk/blog/social-grade-a-b-c1-c2-d-e), where AB is the higher socioeconomic background and DE being the lowest. 
+
+Visually, we can see that C1/C2 (that covers skilled manual and junior professional occupations) is marginally most affected by train strikes, while DE(unskilled manual occupations or unemployed) seem less affected, especially during the 2-day strikes. 
+
 # Breakdown of travel by gender surrounding a six nations rugby match in Twickenham
+
 ```{r fig.width=8, fig.retina=3}
 ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
                                                 y = count,
@@ -103,6 +108,6 @@ ggplot(data = twickenham_by_gender_sc, aes(x = datetime,
                    date_labels = "%H:%M")+
   scale_y_continuous(labels = scales::comma,
                      name = "")
-
-
 ```
+
+Another area of interest this dataset can cover is how large events affect travel, with a particular interest in women's safety. This chart covers the crowds surrounding Twickenham stadium during a rugby match, with the time the match took place with 2 hours either side highlighted. By extending the analysis we can pick out areas and times where women may not use trains as much and flag that for potential risks. 
