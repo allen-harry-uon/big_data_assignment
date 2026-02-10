@@ -87,7 +87,7 @@ strike_data_sc <- waterloo_data_sc %>%
                 workerSum_perc = workerSum / worker_count_baseline,
                 visitorSum_perc = visitorSum / visitor_count_baseline) %>% 
   # Filtering for area after aggregating whole data
-  sparklyr::filter(msoa %in% msoa_codes) %>% 
+  sparklyr::filter(msoa == waterloo_msoa) %>% 
   dplyr::select(date, residentSum_perc, workerSum_perc, 
                 visitorSum_perc) %>% 
   tidyr::pivot_longer(cols = c(residentSum_perc, workerSum_perc, 
