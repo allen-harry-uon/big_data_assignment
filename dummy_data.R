@@ -27,6 +27,33 @@ seGradeABSum <- round(runif(n, min = min, max = max))
 waterloo_msoa <- "E02006801"
 twickenham_msoa <- "E02000794"
 
+dummy_data <- dplyr::tibble(date, peopleCount, residentSum, visitorSum, 
+                            workerSum, seGradeC2Sum, seGradeC1Sum, seGradeDESum, 
+                            seGradeABSum, waterloo_msoa) %>% 
+  dplyr::mutate(date = as.Date(date))
+
+readr::write_csv(dummy_data, "Data/crowd_data/dummy_data.csv")
+
+dummy_baseline <- dummy_data %>% 
+  dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
+  dplyr::select(-date) %>% 
+  dplyr::rename(people_count_baseline = peopleCount,
+                resident_count_baseline = residentSum,
+                worker_count_baseline = workerSum,
+                visitor_count_baseline = visitorSum)
+
+readr::write_csv(dummy_baseline, "Data/crowd_data/dummy_baseline.csv")
+
+dummy_baseline_se <- dummy_data %>% 
+  dplyr::filter(date >= baseline_start & date <= baseline_end) %>% 
+  dplyr::select(-date) %>% 
+  dplyr::rename(AB_baseline = seGradeABSum,
+                C1_baseline = seGradeC1Sum,
+                C2_baseline = seGradeC2Sum,
+                DE_baseline = seGradeDESum)
+
+readr::write_csv(dummy_baseline_se, "Data/crowd_data/dummy_baseline_se.csv")
+
 # Creating table from dummy data
 dummy_data <- dplyr::tibble(date, peopleCount, residentSum, visitorSum, 
                             workerSum, seGradeC2Sum, seGradeC1Sum, seGradeDESum, 
