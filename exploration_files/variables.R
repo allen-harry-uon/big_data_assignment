@@ -10,9 +10,9 @@ waterloo_msoa <- "E02006801"
 twickenham_msoa <- "E02000794"
 
 # Reading shapefiles for mapping
-msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
-selected_shapes <- msoa_shapefile %>% 
-  dplyr::filter(MSOA21CD %in% msoa_codes)
+# msoa_shapefile <- sf::read_sf("Data/map/Middle_layer_Super_Output_Areas_(December_2021)_Boundaries_EW_BFE_(V8)_and_RUC.shp")
+# selected_shapes <- msoa_shapefile %>% 
+#   dplyr::filter(MSOA21CD %in% msoa_codes)
 
 ## Baseline dates
 baseline_start <- "2023-03-06"
