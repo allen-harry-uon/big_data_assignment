@@ -8,7 +8,8 @@ that updates in time with how the data is created and let users choose which dem
 
 ### Learning Aim
 
-The aim is to use Spark in R Studio, explore more Spark transformations, and link this learning to developing real-time dashboards that run smoothly. 
+The aim is to use Spark in R Studio, explore more Spark transformations, and link this learning to how analysis is primarily performed in my organisation 
+(that being done in R).
 
 ### Project Data
 
