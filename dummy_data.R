@@ -1,5 +1,7 @@
 ## Developing dummy data
 library(lubridate)
+library(dplyr)
+library(readr)
 # Setting variables for creating dummy data
 n <- 26208
 min <- 3000
