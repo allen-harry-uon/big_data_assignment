@@ -13,10 +13,10 @@ The aim is to use Spark in R Studio, explore more Spark transformations, and lin
 
 ### Project Data
 
-The telecoms dataset shows the number of people per specific demographic combinations (age, gender, and purpose). This data is at the 'Middle layer super
-output' level, which contains roughly 7000 shapes that cover the UK. The data is split by 5 minute intervals for each area, and the dataset is 234.53GB
-of logical bytes (uncompressed data). The data contains valuable information on how different demographics travel depending on certain events. The velocity 
-at which the data is created and the value it brings to the organisation can class it as Big Data.
+The telecoms dataset shows the number of people per specific demographic combinations (age, gender, purpose for travel, socioeconomic background). This data is at 
+the 'Middle layer super output' (MSOA) level; medium sized geographic units that contain around 7000 shapes that cover the UK. The data is split by 5 minute intervals 
+for each area, and the dataset is 234.53GB of logical bytes (uncompressed data) and almost 46 million rows. The data contains valuable information on how different 
+demographics travel depending on certain events. The velocity at which the data is created and the value it brings to the organisation can class it as Big Data.
 
 ### Business Questions
 
@@ -25,10 +25,6 @@ be looking at how train strikes affect travel for different demographics. Anothe
 I can see how crowd sizes change between men and women around these times and spot particular areas that see a significant decrease in women travelling.
 
 ### Resources - Cloud / On Premise / Costing
-
-Reflect on the resources you have used, and what costs you might incur if your solution were to be scaled up.  You may make use of online costing tools 
-for Azure or other platforms.  How does running your solution in the cloud compare to having dedicated on-premise equipment dedicated to this processing?  
-This is really a focus on ROI (Return on Investment).  What return will be derived given the investment made (fixed cost and marginal cost).
 
 I have used my local computer, but there is scope for analysing the entire dataset the way I have that would incure greater costs. Due to security issues,
 only a certain size workstation is able to connect to and download from the internet, making running code like this on the cloud the most feasible option
